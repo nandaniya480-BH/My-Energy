@@ -11,7 +11,6 @@ use App\Http\Requests\ResetPasswordApiRequest;
 use App\Http\Traits\ApiResponseTrait;
 use App\Interfaces\UserRepositoryInterface;
 use App\Models\User;
-use App\Notifications\VerifyEmail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
@@ -47,7 +46,7 @@ class HomeController extends Controller
         if (Auth::attempt(array('email' => $request->email, 'password' => $request->password, 'status' => 1))) {
 
             $user = $this->userRepository->getUserData();
-            $user['access_token'] = $user->createToken('MyAuthApp')->plainTextToken;
+            $user['access_token'] = $user->createToken('MyAuthApp')->plainTextToken;           
 
             $this->userRepository->updateUser($user->id, ["access_token" => $user['access_token']]);
             return $this->sendResponse(trans('message.loginSuccessfully'), true, array('access_token' => $user->access_token), Response::HTTP_OK);
