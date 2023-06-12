@@ -52,8 +52,7 @@ class HomeController extends Controller
             return $this->sendResponse(trans('message.loginSuccessfully'), true, array('access_token' => $user->access_token), Response::HTTP_OK);
         } elseif (Auth::attempt(array('email' => $request->email, 'password' => $request->password, 'status' => 0))) {
             return $this->sendError(trans('message.custom.account_verify'), null, Response::HTTP_BAD_REQUEST);
-        } else {
-            
+        } else {            
             return $this->sendError(trans('message.inCorrectCredentials'), null, Response::HTTP_BAD_REQUEST);
         }
     }
