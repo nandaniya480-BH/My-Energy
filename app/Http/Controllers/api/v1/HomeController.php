@@ -53,6 +53,7 @@ class HomeController extends Controller
         } elseif (Auth::attempt(array('email' => $request->email, 'password' => $request->password, 'status' => 0))) {
             return $this->sendError(trans('message.custom.account_verify'), null, Response::HTTP_BAD_REQUEST);
         } else {
+            
             return $this->sendError(trans('message.inCorrectCredentials'), null, Response::HTTP_BAD_REQUEST);
         }
     }
