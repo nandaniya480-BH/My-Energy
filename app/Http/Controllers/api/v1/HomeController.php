@@ -10,7 +10,6 @@ use App\Http\Requests\RegisterApiRequest;
 use App\Http\Requests\ResetPasswordApiRequest;
 use App\Http\Traits\ApiResponseTrait;
 use App\Interfaces\UserRepositoryInterface;
-use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
@@ -19,6 +18,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use App\Helpers\Helper;
 
 class HomeController extends Controller
 {
@@ -46,13 +46,13 @@ class HomeController extends Controller
         if (Auth::attempt(array('email' => $request->email, 'password' => $request->password, 'status' => 1))) {
 
             $user = $this->userRepository->getUserData();
-            $user['access_token'] = $user->createToken('MyAuthApp')->plainTextToken;           
+            $user['access_token'] = $user->createToken('MyAuthApp')->plainTextToken;
 
             $this->userRepository->updateUser($user->id, ["access_token" => $user['access_token']]);
             return $this->sendResponse(trans('message.loginSuccessfully'), true, array('access_token' => $user->access_token), Response::HTTP_OK);
         } elseif (Auth::attempt(array('email' => $request->email, 'password' => $request->password, 'status' => 0))) {
             return $this->sendError(trans('message.custom.account_verify'), null, Response::HTTP_BAD_REQUEST);
-        } else {            
+        } else {
             return $this->sendError(trans('message.inCorrectCredentials'), null, Response::HTTP_BAD_REQUEST);
         }
     }
@@ -135,5 +135,10 @@ class HomeController extends Controller
         }
         $message = trans('message.mail_verified');
         return view('email_verify_thank_u', compact('message'));
+    }
+
+    public function test()
+    {
+        Helper::TwilioMessage("+919081931001", "hii Govind");
     }
 }
