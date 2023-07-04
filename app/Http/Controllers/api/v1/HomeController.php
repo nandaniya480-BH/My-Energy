@@ -38,7 +38,7 @@ class HomeController extends Controller
             event(new Registered($user));
             return $this->sendResponse(trans('message.registered'), true, array($user), Response::HTTP_OK);
         }
-        return $this->sendError(trans('message.inCorrectCredentials'), null, Response::HTTP_BAD_REQUEST);
+        return $this->sendError(trans('message.inCorrectCredentials'), Response::HTTP_BAD_REQUEST, null);
     }
 
     public function SignIn(LoginApiRequest $request)
@@ -51,9 +51,9 @@ class HomeController extends Controller
             $this->userRepository->updateUser($user->id, ["access_token" => $user['access_token']]);
             return $this->sendResponse(trans('message.loginSuccessfully'), true, array('access_token' => $user->access_token), Response::HTTP_OK);
         } elseif (Auth::attempt(array('email' => $request->email, 'password' => $request->password, 'status' => 0))) {
-            return $this->sendError(trans('message.custom.account_verify'), null, Response::HTTP_BAD_REQUEST);
+            return $this->sendError(trans('message.custom.account_verify'), Response::HTTP_BAD_REQUEST, null);
         } else {
-            return $this->sendError(trans('message.inCorrectCredentials'), null, Response::HTTP_BAD_REQUEST);
+            return $this->sendError(trans('message.inCorrectCredentials'), Response::HTTP_BAD_REQUEST, null);
         }
     }
 
@@ -65,7 +65,7 @@ class HomeController extends Controller
             $this->userRepository->updateUser($user->id, ["password" => $request->password]);
             return $this->sendResponse(trans('message.custom.update_messages', ["attribute" => "Password"]), true, [], Response::HTTP_OK);
         } else {
-            return $this->sendError(trans('message.inCorrectCredentials'), null, Response::HTTP_BAD_REQUEST);
+            return $this->sendError(trans('message.inCorrectCredentials'), Response::HTTP_BAD_REQUEST, null);
         }
     }
 
@@ -77,7 +77,7 @@ class HomeController extends Controller
         if ($update) {
             return $this->sendResponse(trans('message.logout'), true, null, Response::HTTP_OK);
         } else {
-            return $this->sendError(trans('validation.unknown_error'), null, Response::HTTP_BAD_REQUEST);
+            return $this->sendError(trans('validation.unknown_error'), Response::HTTP_BAD_REQUEST, null);
         }
     }
 
@@ -93,7 +93,7 @@ class HomeController extends Controller
         if ($status == Password::RESET_LINK_SENT) {
             return $this->sendResponse(__($status), true, null, Response::HTTP_OK);
         }
-        return $this->sendError(__($status), null, Response::HTTP_BAD_REQUEST);
+        return $this->sendError(__($status), Response::HTTP_BAD_REQUEST, null);
     }
 
     public function resetPassword(ResetPasswordApiRequest $request)
@@ -110,7 +110,7 @@ class HomeController extends Controller
         if ($status == Password::PASSWORD_RESET) {
             return $this->sendResponse(__($status), true, null, Response::HTTP_OK);
         }
-        return $this->sendError(__($status), null, Response::HTTP_BAD_REQUEST);
+        return $this->sendError(__($status), Response::HTTP_BAD_REQUEST, null);
     }
 
     public function verify(Request $request)
@@ -139,6 +139,6 @@ class HomeController extends Controller
 
     public function test()
     {
-        Helper::TwilioMessage("+919081931001", "hii Govind");
+        return Helper::TwilioMessage("919979907757", "hii Govind");
     }
 }

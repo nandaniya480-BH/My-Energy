@@ -14,7 +14,7 @@ trait ApiResponseTrait
         return response()->json($response, $statusCode);
     }
 
-    public function sendError($error, $errorMessages = [], $code)
+    public function sendError($error, $code, $errorMessages = [])
     {
         $response = [
             'message' => $error,
