@@ -2,14 +2,17 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Traits\ApiResponseTrait;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 
 class LoginApiRequest extends FormRequest
 {
+    use ApiResponseTrait;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -35,7 +38,7 @@ class LoginApiRequest extends FormRequest
 
     protected function failedValidation(Validator $validator)
     {
-        $response = response()->json(["message" => "Validation error", "status" => false, "data" => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
-        throw new ValidationException($validator, $response);
+        $response = $this->error('Validation failed', Response::HTTP_UNPROCESSABLE_ENTITY, $validator->errors());
+        throw new HttpResponseException($response);
     }
 }

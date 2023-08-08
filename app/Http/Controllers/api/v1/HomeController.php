@@ -19,6 +19,9 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use App\Helpers\Helper;
+use Exception;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -33,112 +36,183 @@ class HomeController extends Controller
 
     public function signUp(RegisterApiRequest $request)
     {
-        $user = $this->userRepository->createUser($request->validated());
-        if ($user) {
-            event(new Registered($user));
-            return $this->sendResponse(trans('message.registered'), true, array($user), Response::HTTP_OK);
+        try {
+            DB::beginTransaction();
+
+            $user = $this->userRepository->createUser($request->validated());
+
+            if ($user) {
+                event(new Registered($user));
+                DB::commit();
+                return $this->success(trans('message.registered'), $user, Response::HTTP_OK);
+            }
+
+            DB::commit();
+            return $this->error(trans('message.inCorrectCredentials'), Response::HTTP_BAD_REQUEST);
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
         }
-        return $this->sendError(trans('message.inCorrectCredentials'), Response::HTTP_BAD_REQUEST, null);
     }
+
 
     public function SignIn(LoginApiRequest $request)
     {
-        if (Auth::attempt(array('email' => $request->email, 'password' => $request->password, 'status' => 1))) {
+        try {
+            if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'status' => 1])) {
+                $user = $this->userRepository->getUserData();
+                $user['access_token'] = $user->createToken('MyAuthApp')->plainTextToken;
 
-            $user = $this->userRepository->getUserData();
-            $user['access_token'] = $user->createToken('MyAuthApp')->plainTextToken;
+                $this->userRepository->updateUser($user->id, ["access_token" => $user['access_token']]);
 
-            $this->userRepository->updateUser($user->id, ["access_token" => $user['access_token']]);
-            return $this->sendResponse(trans('message.loginSuccessfully'), true, array('access_token' => $user->access_token), Response::HTTP_OK);
-        } elseif (Auth::attempt(array('email' => $request->email, 'password' => $request->password, 'status' => 0))) {
-            return $this->sendError(trans('message.custom.account_verify'), Response::HTTP_BAD_REQUEST, null);
-        } else {
-            return $this->sendError(trans('message.inCorrectCredentials'), Response::HTTP_BAD_REQUEST, null);
+                return $this->success(trans('message.loginSuccessfully'), ['access_token' => $user->access_token], Response::HTTP_OK);
+            } elseif (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'status' => 0])) {
+                return $this->error(trans('message.custom.account_verify'), Response::HTTP_BAD_REQUEST);
+            } else {
+                return $this->error(trans('message.inCorrectCredentials'), Response::HTTP_BAD_REQUEST);
+            }
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
         }
     }
 
     public function changePassword(changePasswordRequest $request)
     {
-        $user = $this->userRepository->getUserData();
-        if (Hash::check($user->password, $request->password)) {
-            $user['access_token'] = $user->createToken('MyAuthApp')->plainTextToken;
-            $this->userRepository->updateUser($user->id, ["password" => $request->password]);
-            return $this->sendResponse(trans('message.custom.update_messages', ["attribute" => "Password"]), true, [], Response::HTTP_OK);
-        } else {
-            return $this->sendError(trans('message.inCorrectCredentials'), Response::HTTP_BAD_REQUEST, null);
+        try {
+            $user = $this->userRepository->getUserData();
+            if (Hash::check($request->password, $user->password)) {
+                $user['access_token'] = $user->createToken('MyAuthApp')->plainTextToken;
+                $this->userRepository->updateUser($user->id, ["password" => $request->password]);
+                return $this->success(trans('message.custom.update_messages', ["attribute" => "Password"]), [], Response::HTTP_OK);
+            } else {
+                return $this->error(trans('message.inCorrectCredentials'), Response::HTTP_BAD_REQUEST);
+            }
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
         }
     }
 
     public function logOut()
     {
-        $user = $this->userRepository->getUserData();
-        $user->tokens()->delete();
-        $update = $this->userRepository->logout($user->id);
-        if ($update) {
-            return $this->sendResponse(trans('message.logout'), true, null, Response::HTTP_OK);
-        } else {
-            return $this->sendError(trans('validation.unknown_error'), Response::HTTP_BAD_REQUEST, null);
+        try {
+            $user = $this->userRepository->getUserData();
+            $user->tokens()->delete();
+            $update = $this->userRepository->logout($user->id);
+            if ($update) {
+                return $this->success(trans('message.logout'), [], Response::HTTP_OK);
+            } else {
+                return $this->error(trans('validation.unknown_error'), Response::HTTP_BAD_REQUEST);
+            }
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
         }
     }
 
     public function getUser(Request $request)
     {
-        $data = $this->userRepository->getUserData($request);
-        return $this->sendResponse(trans('message.user_detail'), true, $data, Response::HTTP_OK);
+        try {
+            $data = $this->userRepository->getUserData($request);
+            return $this->success(trans('message.user_detail'),  $data, Response::HTTP_OK);
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
+        }
     }
 
     public function forgotPassword(ForgotPasswordApiRequest $request)
     {
-        $status = Password::sendResetLink($request->only('email'));
-        if ($status == Password::RESET_LINK_SENT) {
-            return $this->sendResponse(__($status), true, null, Response::HTTP_OK);
+        try {
+            $status = Password::sendResetLink($request->only('email'));
+            if ($status == Password::RESET_LINK_SENT) {
+                return $this->success(__($status),  [], Response::HTTP_OK);
+            }
+            return $this->error(__($status), Response::HTTP_BAD_REQUEST);
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
         }
-        return $this->sendError(__($status), Response::HTTP_BAD_REQUEST, null);
     }
 
     public function resetPassword(ResetPasswordApiRequest $request)
     {
-        $status = Password::reset(
-            $request->only('email', 'password', 'confirm_password', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->save();
-            }
-        );
+        try {
+            $status = Password::reset(
+                $request->only('email', 'password', 'confirm_password', 'token'),
+                function ($user, $password) {
+                    $user->forceFill([
+                        'password' => Hash::make($password)
+                    ])->save();
+                }
+            );
 
-        if ($status == Password::PASSWORD_RESET) {
-            return $this->sendResponse(__($status), true, null, Response::HTTP_OK);
+            if ($status == Password::PASSWORD_RESET) {
+                return $this->success(__($status), [], Response::HTTP_OK);
+            }
+            return $this->error(__($status), Response::HTTP_BAD_REQUEST);
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
         }
-        return $this->sendError(__($status), Response::HTTP_BAD_REQUEST, null);
     }
 
     public function verify(Request $request)
     {
-        $request->validate([
-            'id' => 'required',
-            'hash' => 'required',
-        ]);
-        $user = $this->userRepository->findUserById($request->id);
+        try {
+            $request->validate([
+                'id' => 'required',
+                'hash' => 'required',
+            ]);
+            $user = $this->userRepository->findUserById($request->id);
 
-        if (!hash_equals((string) $request->hash, sha1($user->getEmailForVerification()))) {
-            abort(404);
-        }
+            if (!hash_equals((string) $request->hash, sha1($user->getEmailForVerification()))) {
+                abort(404);
+            }
 
-        if ($user->hasVerifiedEmail()) {
-            $message = trans('message.already_mail_verified');
+            if ($user->hasVerifiedEmail()) {
+                $message = trans('message.already_mail_verified');
+                return view('email_verify_thank_u', compact('message'));
+            }
+
+            if ($user->markEmailAsVerified()) {
+                event(new Verified($user));
+            }
+            $message = trans('message.mail_verified');
             return view('email_verify_thank_u', compact('message'));
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->error($e->getMessage(), $e->getCode());
         }
-
-        if ($user->markEmailAsVerified()) {
-            event(new Verified($user));
-        }
-        $message = trans('message.mail_verified');
-        return view('email_verify_thank_u', compact('message'));
     }
 
     public function test()
     {
-        return Helper::TwilioMessage("919979907757", "hii Govind");
+        return Helper::TwilioMessage("919081931001", "hii Govind");
     }
 }

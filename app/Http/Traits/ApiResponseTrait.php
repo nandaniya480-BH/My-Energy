@@ -4,27 +4,27 @@ namespace App\Http\Traits;
 
 trait ApiResponseTrait
 {
-    public function sendResponse($message, $status, $result, $statusCode)
+    public function success($message, $data, $statusCode)
     {
         $response = [
             'message' => $message,
-            'status' => $status,
-            'data'    => $result,
+            'status' => 'Success',
+            'data'    => $data,
         ];
         return response()->json($response, $statusCode);
     }
 
-    public function sendError($error, $code, $errorMessages = [])
+    public function error($error, $statusCode, $errorData = [])
     {
         $response = [
             'message' => $error,
-            'status' => false,
-            'error_code' => $code,
+            'status' => 'Error',
+            'error_code' => $statusCode,
         ];
 
-        if (!empty($errorMessages)) {
-            $response['data'] = $errorMessages;
+        if (!empty($errorData)) {
+            $response['errors'] = $errorData;
         }
-        return response()->json($response, $code);
+        return response()->json($response, $statusCode);
     }
 }
