@@ -210,9 +210,4 @@ class HomeController extends Controller
             return $this->error($e->getMessage(), $e->getCode());
         }
     }
-
-    public function test()
-    {
-        return Helper::TwilioMessage("919081931001", "hii Govind");
-    }
 }
