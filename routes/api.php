@@ -1,19 +1,26 @@
 <?php
 
-use App\Http\Controllers\api\v1\HomeController;
+use App\Http\Controllers\Api\V1\ClientController;
+use App\Http\Controllers\Api\V1\HomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\api\v1'], function ($api) {
-    $api->post('register', 'HomeController@signUp');
-    $api->post('login', 'HomeController@signIn');
-    $api->post('forgot-password', 'HomeController@forgotPassword');
-    $api->post('reset-password', 'HomeController@resetPassword');
-    $api->get('verify-email', 'HomeController@verify')->name('verification.verify');
-    $api->get('send-msg', 'HomeController@test');
+Route::group(['middleware' => 'cors'], function () {
 
-    Route::group(['middleware' => ['auth:sanctum', 'verified']], function ($auth) {
-        $auth->post('logout', 'HomeController@logOut');
-        $auth->get('get-user', 'HomeController@getUser');
-        $auth->post('change-password', 'HomeController@changePassword');
+    Route::post('register', [HomeController::class, 'signUp']);
+    Route::post('login', [HomeController::class, 'signIn']);
+    Route::post('forgot-password', [HomeController::class, 'forgotPassword']);
+    Route::post('reset-password', [HomeController::class, 'resetPassword']);
+    Route::get('verify-email', [HomeController::class, 'verify'])->name('verification.verify');
+    // Route::get('send-msg', [HomeController::class, 'test']);
+
+
+    Route::group(['middleware' => 'auth:sanctum', 'verified'], function () {
+        Route::post('logout', [HomeController::class, 'logOut']);
+        Route::get('get-user', [HomeController::class, 'getUser']);
+        Route::post('change-password', [HomeController::class, 'changePassword']);
+
+        Route::apiResources([
+            'client' => ClientController::class,
+        ]);
     });
 });
