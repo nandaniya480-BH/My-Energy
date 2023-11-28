@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\v1;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\changePasswordRequest;
@@ -209,10 +209,5 @@ class HomeController extends Controller
             DB::rollBack();
             return $this->error($e->getMessage(), $e->getCode());
         }
-    }
-
-    public function test()
-    {
-        return Helper::TwilioMessage("919081931001", "hii Govind");
     }
 }
