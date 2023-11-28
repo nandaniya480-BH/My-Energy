@@ -50,9 +50,9 @@ class ClientController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'full_name' => ['required'],
-                'address' => ['required'],
-                'region' => ['required'],
-                'teams_link' => ['required', 'url'],
+                'address' => ['nullable'],
+                'region' => ['nullable'],
+                'teams_link' => ['nullable', 'url'],
             ]);
 
             if ($validator->fails()) {
@@ -96,9 +96,9 @@ class ClientController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'full_name' => ['required'],
-                'address' => ['required'],
-                'region' => ['required'],
-                'teams_link' => ['required', 'url'],
+                'address' => ['nullable'],
+                'region' => ['nullable'],
+                'teams_link' => ['nullable', 'url'],
             ]);
 
             if ($validator->fails()) {
