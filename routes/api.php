@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ClientController;
+use App\Http\Controllers\Api\V1\ClientUserController;
 use App\Http\Controllers\Api\V1\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,7 @@ Route::group(['middleware' => 'cors'], function () {
 
         Route::apiResources([
             'client' => ClientController::class,
+            'client-user' => ClientUserController::class,
         ]);
     });
 });

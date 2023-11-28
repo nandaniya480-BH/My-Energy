@@ -4,20 +4,21 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\ApiResponseTrait;
-use App\Models\Client;
+use App\Models\ClientUser;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class ClientController extends Controller
+class ClientUserController extends Controller
 {
     use ApiResponseTrait;
 
     public function index(Request $request)
     {
         try {
-            $data = Client::query()
+            $data = ClientUser::query()
                 // ->whereStatus($request->status)
                 ->when($request->has('full_name') && $request->full_name[0] != "", function ($query) use ($request) {
                     $query->where('full_name', "LIKE", "%" . $request->full_name[0] . "%");
@@ -35,10 +36,10 @@ class ClientController extends Controller
                 ->get();
 
             return $this->success(
-                'Client list',
+                'Client User list',
                 [
                     'data' => $data,
-                ]
+                ],
             );
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), null, $e->getCode());
@@ -50,9 +51,8 @@ class ClientController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'full_name' => ['required'],
-                'address' => ['required'],
-                'region' => ['required'],
-                'teams_link' => ['required', 'url'],
+                'client_id' => ['required', 'exists:clients,id'],
+                'password' => ['required']
             ]);
 
             if ($validator->fails()) {
@@ -62,15 +62,18 @@ class ClientController extends Controller
                     422
                 );
             }
-            DB::beginTransaction();
-            $data = Client::create($request->only([
+
+            $input = $request->only([
                 'full_name',
-                'address',
-                'region',
-                'teams_link',
-            ]));
+                'client_id',
+                'password',
+            ]);
+            $input['password'] = Hash::make($request->password);
+
+            DB::beginTransaction();
+            $data = ClientUser::create($input);
             DB::commit();
-            return $this->success('New Client created successfully.', $data, Response::HTTP_CREATED);
+            return $this->success('New Client User created successfully.', $data,  Response::HTTP_CREATED);
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->error($e->getMessage(), null,  $e->getCode());
@@ -80,9 +83,9 @@ class ClientController extends Controller
     public function show($id)
     {
         try {
-            $client = Client::find($id);
+            $client = ClientUser::find($id);
             if ($client) {
-                return $this->success('Client info', $client);
+                return $this->success('Client User info', $client);
             } else {
                 throw new \Exception('No record found.', 404);
             }
@@ -96,9 +99,8 @@ class ClientController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'full_name' => ['required'],
-                'address' => ['required'],
-                'region' => ['required'],
-                'teams_link' => ['required', 'url'],
+                'client_id' => ['required', 'exists:clients,id'],
+                'password' => ['required']
             ]);
 
             if ($validator->fails()) {
@@ -109,17 +111,19 @@ class ClientController extends Controller
                 );
             }
 
-            $client = Client::find($id);
+            $input = $request->only([
+                'full_name',
+                'client_id',
+                'password',
+            ]);
+            $input['password'] = Hash::make($request->password);
+
+            $client = ClientUser::find($id);
             DB::beginTransaction();
             if ($client) {
-                $client->update($request->only([
-                    'full_name',
-                    'address',
-                    'region',
-                    'teams_link',
-                ]));
+                $client->update($input);
                 DB::commit();
-                return $this->success('Client updated successfully.');
+                return $this->success('Client User updated successfully.');
             } else {
                 throw new \Exception('No record found.', Response::HTTP_NOT_FOUND);
             }
@@ -132,12 +136,12 @@ class ClientController extends Controller
     public function destroy($id)
     {
         try {
-            $client = Client::find($id);
+            $client = ClientUser::find($id);
             if ($client) {
                 DB::beginTransaction();
                 $client->delete();
                 DB::commit();
-                return $this->success('Client deleted successfully.');
+                return $this->success('Client User deleted successfully.');
             } else {
                 throw new \Exception('No record found.', Response::HTTP_NOT_FOUND);
             }
