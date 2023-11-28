@@ -34,18 +34,12 @@ class ClientController extends Controller
                     $query->where('teams_link', "LIKE", "%" . $request->teams_link[0] . "%");
                 })
                 ->orderBy($request->sortField ?? 'id', $request->sortOrder ?? 'asc')
-                ->paginate($request->pageSize);
-
-            $counts = Client::select('status', DB::raw("count(*)"))
-                ->groupBy('status')
-                ->pluck('count(*)', 'status')
-                ->toArray();
+                ->get();
 
             return $this->success(
                 'Client list',
                 [
                     'data' => $data,
-                    'counts' => $counts
                 ]
             );
         } catch (\Exception $e) {
