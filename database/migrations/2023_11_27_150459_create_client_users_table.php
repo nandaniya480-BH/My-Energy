@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('clients', function (Blueprint $table) {
+        Schema::create('client_users', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('client_id');
             $table->string('full_name');
-            $table->string('address');
-            $table->string('region');
-            $table->string('teams_link')->nullable();
-            $table->unsignedTinyInteger('status')->default(1)->comment('0 = Delete, 1 = Active');
+            $table->string('password');
+            $table->datetime('last_login')->nullable();
+            $table->unsignedBigInteger('master_client_user')->nullable();        
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clients');
+        Schema::dropIfExists('client_users');
     }
 };
