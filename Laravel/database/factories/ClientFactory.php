@@ -2,6 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\Client;
+use App\Models\ClientPlan;
+use App\Models\ClientUser;
+use App\Models\ConsumptionPlan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,11 +21,30 @@ class ClientFactory extends Factory
     public function definition(): array
     {
         return [
-            // 'department_id' => Department::inRandomOrder()->first()->id,
             'full_name' => $this->faker->firstName . $this->faker->lastName,
             "address" => $this->faker->address,
             "region" => "EU",
             "teams_link" => $this->faker->url,
         ];
+    }
+    public function configure()
+    {
+        return $this->afterCreating(function (Client $client) {
+            ClientUser::factory()
+                ->count(random_int(5, 10))
+                ->create(['client_id' => $client->id]);
+
+            ClientPlan::factory()
+                ->count(random_int(5, 10))
+                ->create(['client_id' => $client->id]);
+
+            ConsumptionPlan::factory()
+                ->count(random_int(5, 10))
+                ->create([
+                    'client_id' => $client->id,
+                    'client_user_id' => $client->users->random()->id,
+                    'client_plan_id' => $client->plans->random()->id,
+                ]);
+        });
     }
 }

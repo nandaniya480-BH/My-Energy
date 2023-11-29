@@ -25,7 +25,6 @@ class ClientPlanFactory extends Factory
             'short_name' => $this->faker->randomElement($short_name),
             'description' => $this->faker->randomElement($description),
             'status' => $this->faker->randomElement([0, 1]),
-            'client_id' => Client::all()->random()->id,
             'purchase_source' => $this->faker->randomElement($purchase_source),
             'source_capacity' => $this->faker->numberBetween(1, 1000),
         ];

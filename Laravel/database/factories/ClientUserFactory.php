@@ -19,7 +19,6 @@ class ClientUserFactory extends Factory
     {
         return [
             'full_name' => $this->faker->firstName . $this->faker->lastName,
-            "client_id" => Client::all()->random()->id,
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi'
         ];
     }
