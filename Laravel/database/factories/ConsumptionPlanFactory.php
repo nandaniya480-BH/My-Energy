@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Client;
+use DateInterval;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,10 +18,13 @@ class ConsumptionPlanFactory extends Factory
      */
     public function definition()
     {
+        $date = $this->faker->dateTimeBetween('2023-01-01', '2023-11-31');
+        $futureDate = $date->add(new DateInterval("P{$this->faker->numberBetween(1, 30)}D"));
         return [
-            'consumption' =>  $this->faker->numberBetween(1.00, 1000.00),
-            'last_update' => now(),
-            'status' => $this->faker->randomElement(['Final, Draft']),
+            'consumption' => $this->faker->randomFloat(2, 1.01, 1000.99),
+            'status' => $this->faker->randomElement(['Final', 'Draft']),
+            'last_update' => $futureDate,
+            'created_at' => $this->faker->dateTimeBetween('2023-01-01', '2023-12-31')
         ];
     }
 }

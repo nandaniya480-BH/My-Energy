@@ -20,6 +20,7 @@ class ConsumptionPlanController extends Controller
         try {
             $data = ConsumptionPlan::query()
                 ->whereClientId($client_id)
+                ->with('plans', 'users')
                 ->orderBy($request->sortField ?? 'id', $request->sortOrder ?? 'asc')
                 ->get();
 
@@ -40,7 +41,7 @@ class ConsumptionPlanController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'client_id' => ['required', 'exists:clients,id'],
-                'client_user_id' => ['required', 'exists:client_users,id'],
+                'client_user_id' => ['nullable', 'exists:client_users,id'],
                 'client_plan_id' => ['required', 'exists:client_plans,id'],
                 'consumption' => ['required', 'numeric'],
                 'status' => ['required'],
@@ -69,7 +70,7 @@ class ConsumptionPlanController extends Controller
     public function show($id)
     {
         try {
-            $consumption_plan = ConsumptionPlan::find($id);
+            $consumption_plan = ConsumptionPlan::with('plans', 'users')->find($id);
             if ($consumption_plan) {
                 return $this->success('Consumption Plan info', $consumption_plan);
             } else {
@@ -86,7 +87,7 @@ class ConsumptionPlanController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'client_id' => ['required', 'exists:clients,id'],
-                'client_user_id' => ['required', 'exists:client_users,id'],
+                'client_user_id' => ['nullable', 'exists:client_users,id'],
                 'client_plan_id' => ['required', 'exists:client_plans,id'],
                 'consumption' => ['required', 'numeric'],
                 'status' => ['required'],
@@ -123,7 +124,7 @@ class ConsumptionPlanController extends Controller
             $consumption_plan = ConsumptionPlan::find($id);
             if ($consumption_plan) {
                 DB::beginTransaction();
-                $consumption_plan->delete();
+                    $consumption_plan->delete();
                 DB::commit();
                 return $this->success('Consumption Plan deleted successfully.');
             } else {
