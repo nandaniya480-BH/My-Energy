@@ -13,7 +13,6 @@ Route::group(['middleware' => 'cors'], function () {
     Route::post('forgot-password', [HomeController::class, 'forgotPassword']);
     Route::post('reset-password', [HomeController::class, 'resetPassword']);
     Route::get('verify-email', [HomeController::class, 'verify'])->name('verification.verify');
-    // Route::get('send-msg', [HomeController::class, 'test']);
 
 
     Route::group(['middleware' => 'auth:sanctum', 'verified'], function () {
