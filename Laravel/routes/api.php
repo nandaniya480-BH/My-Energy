@@ -24,6 +24,7 @@ Route::group(['middleware' => 'cors'], function () {
             'client' => ClientController::class,
             'client-user' => ClientUserController::class,
         ]);
+        Route::get('client-user-index/{id}', [ClientUserController::class, 'client_user_index']);
         Route::get('client-plans/{id}', [ClientPlanController::class, 'get_client_plans']);
     });
 });

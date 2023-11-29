@@ -15,11 +15,11 @@ class ClientUserController extends Controller
 {
     use ApiResponseTrait;
 
-    public function index(Request $request)
+    public function client_user_index($client_id, Request $request)
     {
         try {
             $data = ClientUser::query()
-                // ->whereStatus($request->status)
+                ->whereClientId($client_id)
                 ->when($request->has('full_name') && $request->full_name[0] != "", function ($query) use ($request) {
                     $query->where('full_name', "LIKE", "%" . $request->full_name[0] . "%");
                 })
