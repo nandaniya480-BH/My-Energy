@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Client;
+use App\Models\ClientPlan;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -24,7 +25,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             ClientSeeder::class,
-            ClientUserSeeder::class
+            ClientUserSeeder::class,
+            ClientPlanSeeder::class
         ]);
     }
 }

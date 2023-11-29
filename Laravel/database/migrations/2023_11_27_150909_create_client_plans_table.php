@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('short_name');
             $table->longText('description');
             $table->tinyInteger('status')->comment('1 = Active, 0 = Deactivate');
-            $table->unsignedBigInteger('client_user_id');
+            $table->unsignedBigInteger('client_id');
             $table->string('purchase_source');
             $table->decimal('source_capacity');
             $table->timestamps();

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ClientController;
+use App\Http\Controllers\Api\V1\ClientPlanController;
 use App\Http\Controllers\Api\V1\ClientUserController;
 use App\Http\Controllers\Api\V1\HomeController;
 use Illuminate\Support\Facades\Route;
@@ -24,5 +25,6 @@ Route::group(['middleware' => 'cors'], function () {
             'client' => ClientController::class,
             'client-user' => ClientUserController::class,
         ]);
+        Route::get('client-plans/{id}', [ClientPlanController::class, 'get_client_plans']);
     });
 });
