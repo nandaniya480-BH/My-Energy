@@ -124,7 +124,7 @@ class ConsumptionPlanController extends Controller
             $consumption_plan = ConsumptionPlan::find($id);
             if ($consumption_plan) {
                 DB::beginTransaction();
-                    $consumption_plan->delete();
+                $consumption_plan->delete();
                 DB::commit();
                 return $this->success('Consumption Plan deleted successfully.');
             } else {
