@@ -72,8 +72,11 @@ class HomeController extends Controller
                 $user['access_token'] = $user->createToken('MyAuthApp')->plainTextToken;
 
                 $this->userRepository->updateUser($user->id, ["access_token" => $user['access_token']]);
-
-                return $this->success(trans('message.loginSuccessfully'), ['access_token' => $user->access_token], Response::HTTP_OK);
+                $data  = [
+                    'access_token' => $user->access_token,
+                    'permission' => $user->role->permissions
+                ];
+                return $this->success(trans('message.loginSuccessfully'), $data, Response::HTTP_OK);
             } else {
                 return $this->error(trans('message.inCorrectCredentials'), Response::HTTP_BAD_REQUEST);
             }

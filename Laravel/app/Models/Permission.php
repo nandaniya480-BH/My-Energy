@@ -5,14 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Role extends Model
+class Permission extends Model
 {
     use HasFactory;
     public $timestamps = false;
     protected $guarded = [];
 
-    public function permissions()
+    protected $casts = [
+        'access' => 'json',
+    ];
+
+    public function getaccessAttribute($value)
     {
-        return $this->hasMany(Permission::class);
+        return json_decode($value, true);
     }
 }

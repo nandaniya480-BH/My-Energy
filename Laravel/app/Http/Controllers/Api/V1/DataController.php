@@ -7,6 +7,7 @@ use App\Http\Traits\ApiResponseTrait;
 use App\Models\Client;
 use App\Models\ClientPlan;
 use App\Models\ClientUser;
+use App\Models\Role;
 use Illuminate\Http\Request;
 
 class DataController extends Controller
@@ -19,6 +20,20 @@ class DataController extends Controller
             return $this->success(
                 'Client list',
                 Client::query()
+                    ->get()
+            );
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), null, $e->getCode());
+        }
+    }
+
+    public function role()
+    {
+        try {
+            return $this->success(
+                'Role',
+                Role::query()
+                    ->with('permissions')
                     ->get()
             );
         } catch (\Exception $e) {
