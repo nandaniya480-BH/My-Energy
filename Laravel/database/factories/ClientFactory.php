@@ -20,10 +20,11 @@ class ClientFactory extends Factory
      */
     public function definition(): array
     {
+        $region  = ['SK', 'HU', 'CZ', 'AT'];
         return [
             'full_name' => $this->faker->firstName . $this->faker->lastName,
             "address" => $this->faker->address,
-            "region" => "EU",
+            "region" => $this->faker->randomElement($region),
             "teams_link" => $this->faker->url,
         ];
     }
@@ -38,13 +39,13 @@ class ClientFactory extends Factory
                 ->count(random_int(5, 10))
                 ->create(['client_id' => $client->id]);
 
-            ConsumptionPlan::factory()
-                ->count(random_int(10, 15))
-                ->create([
-                    'client' => $client->full_name,
-                    'client_user' => $client->users->random()->full_name,
-                    'client_plan' => $client->plans->random()->short_name,
-                ]);
+            // ConsumptionPlan::factory()
+            //     ->count(random_int(10, 15))
+            //     ->create([
+            //         'client' => $client->full_name,
+            //         'client_user' => $client->users->random()->full_name,
+            //         'client_plan' => $client->plans->random()->short_name,
+            //     ]);
         });
     }
 }
