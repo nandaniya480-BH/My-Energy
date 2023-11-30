@@ -10,17 +10,17 @@ class ConsumptionPlan extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public function plan()
+    public function client_plan()
     {
         return $this->belongsTo(ClientPlan::class, 'client_plan', 'short_name');
     }
 
-    public function user()
+    public function client_user()
     {
         return $this->belongsTo(ClientUser::class, 'client_user', 'full_name');
     }
 
-    public function client_data()
+    public function client()
     {
         return $this->belongsTo(Client::class, 'client', 'full_name');
     }
