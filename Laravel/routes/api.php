@@ -32,9 +32,9 @@ Route::group(['middleware' => 'cors'], function () {
             'client-user' => ClientUserController::class,
             'consumption-plan' => ConsumptionPlanController::class,
         ]);
-        Route::get('client-user-index/{id}', [ClientUserController::class, 'client_user_index']);
-        Route::get('consumption-plan-index/{id}', [ConsumptionPlanController::class, 'client_user_index']);
-        Route::post('consumption-plan-data/{id}', [ConsumptionPlanController::class, 'consumption_plan_data']);
+        Route::get('client-user-index/{client}', [ClientUserController::class, 'client_user_index']);
+        Route::get('consumption-plan-index/{client}', [ConsumptionPlanController::class, 'client_user_index']);
+        Route::post('consumption-plan-data/{client}', [ConsumptionPlanController::class, 'consumption_plan_data']);
         
         Route::get('client-plans/{id}', [ClientPlanController::class, 'get_client_plans']);
     });
