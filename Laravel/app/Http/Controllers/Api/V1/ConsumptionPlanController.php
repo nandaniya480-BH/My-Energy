@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\ApiResponseTrait;
 use App\Models\ConsumptionPlan;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,34 @@ class ConsumptionPlanController extends Controller
                 [
                     'data' => $data,
                 ],
+            );
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), null, $e->getCode());
+        }
+    }
+
+    public function consumption_plan_data($client, Request $request)
+    {
+        try {
+            $fromDate = $request->input('from_date');
+            $toDate = $request->input('to_date');
+
+            $start_date = $fromDate ? Carbon::parse($fromDate)->startOfDay() : null;
+            $end_date = $toDate ? Carbon::parse($toDate)->endOfDay() : null;
+
+            $query = ConsumptionPlan::whereClient($client)
+                ->with('plan', 'user', 'client')
+                ->when($start_date, function ($query) use ($start_date) {
+                    $query->where('created_at', '>=', $start_date);
+                })
+                ->when($end_date, function ($query) use ($end_date) {
+                    $query->where('created_at', '<=', $end_date);
+                })
+                ->get();
+
+            return $this->success(
+                'Consumption Plan list',
+                ['data' => $query]
             );
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), null, $e->getCode());
@@ -80,7 +109,7 @@ class ConsumptionPlanController extends Controller
     {
         try {
             $consumption_plan = ConsumptionPlan::query()
-                // ->with('plans', 'users')
+                // ->with('plan', 'user')
                 ->find($id);
             if ($consumption_plan) {
                 return $this->success('Consumption Plan info', $consumption_plan);
