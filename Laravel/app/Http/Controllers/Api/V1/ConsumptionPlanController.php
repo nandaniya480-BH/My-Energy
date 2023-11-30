@@ -40,9 +40,18 @@ class ConsumptionPlanController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'client_id' => ['required', 'exists:clients,id'],
-                'client_user_id' => ['nullable', 'exists:client_users,id'],
-                'client_plan_id' => ['required', 'exists:client_plans,id'],
+                'client' => [
+                    'required',
+                    // 'exists:clients,full_name'
+                ],
+                'client_user' => [
+                    'nullable',
+                    // 'exists:client_users,full_name'
+                ],
+                'client_plan' => [
+                    'nullable',
+                    // 'exists:client_plans,short_name'
+                ],
                 'consumption' => ['required', 'numeric'],
                 'status' => ['required'],
             ]);
@@ -88,9 +97,18 @@ class ConsumptionPlanController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'client_id' => ['required', 'exists:clients,id'],
-                'client_user_id' => ['nullable', 'exists:client_users,id'],
-                'client_plan_id' => ['required', 'exists:client_plans,id'],
+                'client' => [
+                    'required',
+                    // 'exists:clients,full_name'
+                ],
+                'client_user' => [
+                    'nullable',
+                    // 'exists:client_users,full_name'
+                ],
+                'client_plan' => [
+                    'nullable',
+                    // 'exists:client_plans,short_name'
+                ],
                 'consumption' => ['required', 'numeric'],
                 'status' => ['required'],
             ]);
