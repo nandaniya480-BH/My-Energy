@@ -17,7 +17,7 @@ class ClientPlanFactory extends Factory
      */
     public function definition(): array
     {
-        $short_name = ['Workweek', 'FromBattery', 'ToBattery', 'Weekend', 'Friday', 'Friday', 'Workweek'];
+        $short_name = ['Workweek', 'FromBattery', 'ToBattery', 'Weekend', 'Friday', 'Workweek'];
         $description = ['Business workdays', 'from Battery storage of the company', 'Battery storage of the company', 'Week ends and bank holidays ', 'Special schedule for Fridays', 'Special schedule for Fridays', 'Business workdays'];
         $purchase_source = ['HUPX', 'Battery', 'OKTE', 'OKTE', 'HUPX', 'HUPX', 'HUPX'];
 

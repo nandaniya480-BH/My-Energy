@@ -20,6 +20,7 @@ class ConsumptionPlanFactory extends Factory
     {
         $date = $this->faker->dateTimeBetween('2023-01-01', '2023-11-31');
         $futureDate = $date->add(new DateInterval("P{$this->faker->numberBetween(1, 30)}D"));
+        
         return [
             'consumption' => $this->faker->randomFloat(2, 1.01, 1000.99),
             'status' => $this->faker->randomElement(['Final', 'Draft']),
