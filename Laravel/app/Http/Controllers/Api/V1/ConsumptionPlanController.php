@@ -15,12 +15,12 @@ class ConsumptionPlanController extends Controller
 
     use ApiResponseTrait;
 
-    public function client_user_index($client_id, Request $request)
+    public function client_user_index($client, Request $request)
     {
         try {
             $data = ConsumptionPlan::query()
-                ->whereClientId($client_id)
-                ->with('plans', 'users')
+                ->whereClient($client)
+                // ->with('plans', 'users')
                 ->orderBy($request->sortField ?? 'id', $request->sortOrder ?? 'asc')
                 ->get();
 
@@ -70,7 +70,9 @@ class ConsumptionPlanController extends Controller
     public function show($id)
     {
         try {
-            $consumption_plan = ConsumptionPlan::with('plans', 'users')->find($id);
+            $consumption_plan = ConsumptionPlan::query()
+                // ->with('plans', 'users')
+                ->find($id);
             if ($consumption_plan) {
                 return $this->success('Consumption Plan info', $consumption_plan);
             } else {

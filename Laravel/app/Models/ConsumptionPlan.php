@@ -12,12 +12,11 @@ class ConsumptionPlan extends Model
 
     public function plans()
     {
-        return $this->belongsTo(ClientPlan::class, 'client_id');
+        return $this->belongsTo(ClientPlan::class, 'client_plan', 'short_name');
     }
 
     public function users()
     {
-        return $this->belongsTo(ClientUser::class, 'client_id');
+        return $this->belongsTo(ClientUser::class, 'client_user', 'full_name');
     }
-
 }

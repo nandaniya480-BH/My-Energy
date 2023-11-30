@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('consumption_plans', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('client_id');
-            $table->string('client_user_id');
-            $table->string('client_plan_id');
+            $table->string('client');
+            $table->string('client_user');
+            $table->string('client_plan');
             $table->decimal('consumption')->comment('In MWh');
             $table->dateTime('last_update')->nullable();
             $table->string('status')->comment('Final, Draft');

@@ -41,9 +41,9 @@ class ClientFactory extends Factory
             ConsumptionPlan::factory()
                 ->count(random_int(50, 100))
                 ->create([
-                    'client_id' => $client->id,
-                    'client_user_id' => $client->users->random()->id,
-                    'client_plan_id' => $client->plans->random()->id,
+                    'client' => $client->full_name,
+                    'client_user' => $client->users->random()->full_name,
+                    'client_plan' => $client->plans->random()->short_name,
                 ]);
         });
     }
