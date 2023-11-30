@@ -62,15 +62,18 @@ class HomeController extends Controller
     public function SignIn(LoginApiRequest $request)
     {
         try {
-            if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'status' => 1])) {
+            $credentials = $request->only('user_name', 'email', 'password');
+
+            $emailAttempt = Auth::attempt(['email' => $request->email, 'password' => $request->password, 'status' => 1]);
+            $usernameAttempt = Auth::attempt(['user_name' => $request->user_name, 'password' => $request->password, 'status' => 1]);
+
+            if ($emailAttempt || $usernameAttempt) {
                 $user = $this->userRepository->getUserData();
                 $user['access_token'] = $user->createToken('MyAuthApp')->plainTextToken;
 
                 $this->userRepository->updateUser($user->id, ["access_token" => $user['access_token']]);
 
                 return $this->success(trans('message.loginSuccessfully'), ['access_token' => $user->access_token], Response::HTTP_OK);
-            } elseif (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'status' => 0])) {
-                return $this->error(trans('message.custom.account_verify'), Response::HTTP_BAD_REQUEST);
             } else {
                 return $this->error(trans('message.inCorrectCredentials'), Response::HTTP_BAD_REQUEST);
             }
@@ -82,6 +85,8 @@ class HomeController extends Controller
             return $this->error($e->getMessage(), $e->getCode());
         }
     }
+
+
 
     public function changePassword(changePasswordRequest $request)
     {
