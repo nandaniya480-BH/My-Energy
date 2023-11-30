@@ -46,7 +46,7 @@ class ConsumptionPlanController extends Controller
             $end_date = $toDate ? Carbon::parse($toDate)->endOfDay() : null;
 
             $query = ConsumptionPlan::whereClient($client)
-                ->with('plan', 'user', 'client')
+                ->with('plan', 'user', 'client_data')
                 ->when($start_date, function ($query) use ($start_date) {
                     $query->where('created_at', '>=', $start_date);
                 })

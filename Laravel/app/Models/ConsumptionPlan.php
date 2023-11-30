@@ -20,8 +20,8 @@ class ConsumptionPlan extends Model
         return $this->belongsTo(ClientUser::class, 'client_user', 'full_name');
     }
 
-    public function client()
+    public function client_data()
     {
-        return $this->belongsTo(ClientUser::class, 'client_user', 'full_name');
+        return $this->belongsTo(Client::class, 'client', 'full_name');
     }
 }
