@@ -18,24 +18,53 @@ class RoleSeeder extends Seeder
                     [
                         'module' => 'Client',
                         'permission' => ['C', 'R', 'U', 'D']
+                    ],
+                    [
+                        'module' => 'Client User',
+                        'permission' => ['C', 'R', 'U', 'D']
+                    ],
+                    [
+                        'module' => 'Consumption Plan',
+                        'permission' => ['C', 'R', 'U', 'D']
                     ]
                 ]
             ],
             [
-                'name' => 'Client',
+                'name' => 'Manager',
                 'permissions' => [
                     [
                         'module' => 'Client User',
                         'permission' => ['C', 'R', 'U', 'D']
+                    ],
+                    [
+                        'module' => 'Consumption Plan',
+                        'permission' => ['C', 'R', 'U', 'D']
                     ]
                 ]
             ],
             [
-                'name' => 'Consumption Plan',
+                'name' => 'Employee',
                 'permissions' => [
                     [
                         'module' => 'Consumption Plan',
                         'permission' => ['C', 'R', 'U', 'D']
+                    ]
+                ]
+            ],
+            [
+                'name' => 'Guest',
+                'permissions' => [
+                    [
+                        'module' => 'Client',
+                        'permission' => ['R']
+                    ],
+                    [
+                        'module' => 'Client User',
+                        'permission' => ['R']
+                    ],
+                    [
+                        'module' => 'Consumption Plan',
+                        'permission' => ['R']
                     ]
                 ]
             ]

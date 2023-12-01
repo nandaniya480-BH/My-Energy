@@ -36,14 +36,14 @@ class ClientFactory extends Factory
 
             User::factory()->create([
                 'user_name' => $client->full_name,
-                'role_id' =>  Role::where('name', 'admin')->first()->id
+                'role_id' =>  Role::where('name', 'Admin')->first()->id
             ]);
 
             ClientUser::factory()
                 ->count(random_int(5, 10))
                 ->create([
                     'client_id' => $client->id,
-                    'role_id' =>  Role::where('name', 'client')->first()->id
+                    'role_id' =>  Role::where('name', 'Manager')->first()->id
                 ]);
 
             ClientPlan::factory()
