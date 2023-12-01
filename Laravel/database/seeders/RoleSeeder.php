@@ -13,28 +13,28 @@ class RoleSeeder extends Seeder
     {
         $roles = [
             [
-                'name' => 'admin',
+                'name' => 'Admin',
                 'permissions' => [
                     [
-                        'module' => 'client',
+                        'module' => 'Client',
                         'permission' => ['C', 'R', 'U', 'D']
                     ]
                 ]
             ],
             [
-                'name' => 'client',
+                'name' => 'Client',
                 'permissions' => [
                     [
-                        'module' => 'client_user',
+                        'module' => 'Client User',
                         'permission' => ['C', 'R', 'U', 'D']
                     ]
                 ]
             ],
             [
-                'name' => 'consumption_plan',
+                'name' => 'Consumption Plan',
                 'permissions' => [
                     [
-                        'module' => 'consumption_plan',
+                        'module' => 'Consumption Plan',
                         'permission' => ['C', 'R', 'U', 'D']
                     ]
                 ]
