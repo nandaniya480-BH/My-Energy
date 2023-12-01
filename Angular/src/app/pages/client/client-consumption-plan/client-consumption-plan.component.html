@@ -1,0 +1,350 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2" *ngIf="permission('C')">
+                        <button
+                            pButton
+                            pRipple
+                            label="New"
+                            icon="pi pi-plus"
+                            class="p-button-success mr-2"
+                            (click)="openNew()"
+                        ></button>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;
+                    <div class="my-2">
+                        <button
+                            pButton
+                            pRipple
+                            label="Go Back"
+                            icon="pi pi-arrow-left"
+                            class="p-button-primary mr-2"
+                            (click)="goBack()"
+                        ></button>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;
+                    <div class="my-2">
+                        <h1 style="margin-top: 10px;">Consumption of {{ client.full_name }}</h1>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table
+                #dt
+                [value]="clientCons"
+                [columns]="cols"
+                responsiveLayout="scroll"
+                [rows]="10"
+                [globalFilterFields]="[
+                    'client',
+                    'client_user',
+                    'client_plan',
+                    'consumption',
+                    'status',
+                    'created_at'
+                ]"
+                [paginator]="true"
+                [rowsPerPageOptions]="[10, 20, 30]"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [(selection)]="selectedClientCons"
+                selectionMode="multiple"
+                [rowHover]="true"
+                dataKey="id"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
+                    >
+                        <h5 class="m-0">Manage Client Consumptions</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input
+                                pInputText
+                                type="text"
+                                (input)="onGlobalFilter(dt, $event)"
+                                placeholder="Search..."
+                                class="w-full sm:w-auto"
+                            />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="client">
+                            client<p-sortIcon field="client"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="client_user">
+                            client_user<p-sortIcon
+                                field="client_user"
+                            ></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="client_plan">
+                            client_plan<p-sortIcon
+                                field="client_plan"
+                            ></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="consumption">
+                            consumption<p-sortIcon
+                                field="consumption"
+                            ></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="status">
+                            status<p-sortIcon field="status"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="created_at">
+                            created_at<p-sortIcon
+                                field="created_at"
+                            ></p-sortIcon>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-cCons>
+                    <tr>
+                        <td style="width: 14%; min-width: 10rem">
+                            <span class="p-column-title">client</span>
+                            {{ cCons.client }}
+                        </td>
+                        <td style="width: 14%; min-width: 8rem">
+                            <span class="p-column-title">client_user</span>
+                            {{ cCons.client_user }}
+                        </td>
+                        <td style="width: 14%; min-width: 8rem">
+                            <span class="p-column-title">client_plan</span>
+                            {{ cCons.client_plan }}
+                        </td>
+                        <td style="width: 14%; min-width: 8rem">
+                            <span class="p-column-title">consumption</span>
+                            {{ cCons.consumption }}
+                        </td>
+                        <td style="width: 14%; min-width: 8rem">
+                            <span class="p-column-title">status</span>
+                            {{ cCons.status }}
+                        </td>
+                        <td style="width: 14%; min-width: 8rem">
+                            <span class="p-column-title">created_at</span>
+                            {{ cCons.created_at | date : 'dd-MMM-yyyy HH:mm:ss'}}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button
+                                    pButton
+                                    pRipple
+                                    *ngIf="permission('U')"
+                                    icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-success mr-2"
+                                    (click)="edit(cCons)"
+                                ></button>
+                                <button
+                                    pButton
+                                    pRipple
+                                    *ngIf="permission('D')"
+                                    icon="pi pi-trash"
+                                    class="p-button-rounded p-button-warning"
+                                    (click)="delete(cCons)"
+                                ></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog
+            [(visible)]="clientConDialog"
+            [style]="{ width: '450px' }"
+            header="Client Consumption Details"
+            [modal]="true"
+            class="p-fluid"
+        >
+            <ng-template pTemplate="content">
+                <div class="field">
+                    <label for="client">Client</label>
+                    <input
+                        type="text"
+                        pInputText
+                        id="client"
+                        [disabled]="true"
+                        name="client"
+                        [(ngModel)]="clientCon.client"
+                        required
+                        autofocus
+                        [ngClass]="{
+                            'ng-invalid ng-dirty':
+                                submitted && !clientCon.client
+                        }"
+                    />
+                    <small
+                        class="ng-dirty ng-invalid"
+                        *ngIf="submitted && !clientCon.client"
+                        >Client is required.</small
+                    >
+                </div>
+                <div class="field">
+                    <label for="client_user">Client User</label>
+                    <input
+                        type="text"
+                        pInputText
+                        id="client_user"
+                        name="client_user"
+                        [(ngModel)]="clientCon.client_user"
+                        required
+                        autofocus
+                        [ngClass]="{
+                            'ng-invalid ng-dirty':
+                                submitted && !clientCon.client_user
+                        }"
+                    />
+                    <small
+                        class="ng-dirty ng-invalid"
+                        *ngIf="submitted && !clientCon.client_user"
+                        >Client User is required.</small
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="client_plan">Client Plan</label>
+                    <input
+                        type="text"
+                        pInputText
+                        id="client_plan"
+                        name="client_plan"
+                        [(ngModel)]="clientCon.client_plan"
+                        required
+                        autofocus
+                        [ngClass]="{
+                            'ng-invalid ng-dirty':
+                                submitted && !clientCon.client_plan
+                        }"
+                    />
+                    <small
+                        class="ng-dirty ng-invalid"
+                        *ngIf="submitted && !clientCon.client_plan"
+                        >Client plan is required.</small
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="consumption">Consumption</label>
+                    <input
+                        type="text"
+                        pInputText
+                        id="consumption"
+                        name="consumption"
+                        [(ngModel)]="clientCon.consumption"
+                        required
+                        autofocus
+                        [ngClass]="{
+                            'ng-invalid ng-dirty':
+                                submitted && !clientCon.consumption
+                        }"
+                    />
+                    <small
+                        class="ng-dirty ng-invalid"
+                        *ngIf="submitted && !clientCon.client_plan"
+                        >Consumption is required.</small
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="status">Status</label>
+                    <input
+                        type="text"
+                        pInputText
+                        id="status"
+                        name="status"
+                        [(ngModel)]="clientCon.status"
+                        required
+                        autofocus
+                        [ngClass]="{
+                            'ng-invalid ng-dirty':
+                                submitted && !clientCon.status
+                        }"
+                    />
+                    <small
+                        class="ng-dirty ng-invalid"
+                        *ngIf="submitted && !clientCon.client_plan"
+                        >Status is required.</small
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="created_at">Created At</label>
+                    <p-calendar
+                        [showIcon]="true"
+                        id="created_at"
+                        name="created_at"
+                        [showIcon]="true" [showTime]="true" [showSeconds]="true"
+                        [(ngModel)]="clientCon.created_at"
+                        required
+                        autofocus
+                        [ngClass]="{
+                            'ng-invalid ng-dirty':
+                                submitted && !clientCon.created_at
+                        }"
+                    ></p-calendar>
+                    <small
+                        class="ng-dirty ng-invalid"
+                        *ngIf="submitted && !clientCon.created_at"
+                        >Created At is required.</small
+                    >
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button
+                    pButton
+                    pRipple
+                    label="Cancel"
+                    icon="pi pi-times"
+                    class="p-button-text"
+                    (click)="hideDialog()"
+                ></button>
+                <button
+                    pButton
+                    pRipple
+                    label="Save"
+                    icon="pi pi-check"
+                    class="p-button-text"
+                    (click)="save()"
+                ></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog
+            [(visible)]="deleteClientConDialog"
+            header="Confirm"
+            [modal]="true"
+            [style]="{ width: '450px' }"
+        >
+            <div class="flex align-items-center justify-content-center">
+                <i
+                    class="pi pi-exclamation-triangle mr-3"
+                    style="font-size: 2rem"
+                ></i>
+                <span *ngIf="clientCon">Are you sure you want to delete ?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button
+                    pButton
+                    pRipple
+                    icon="pi pi-times"
+                    class="p-button-text"
+                    label="No"
+                    (click)="deleteClientConDialog = false"
+                ></button>
+                <button
+                    pButton
+                    pRipple
+                    icon="pi pi-check"
+                    class="p-button-text"
+                    label="Yes"
+                    (click)="confirmDelete()"
+                ></button>
+            </ng-template>
+        </p-dialog>
+    </div>
+</div>

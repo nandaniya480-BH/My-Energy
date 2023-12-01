@@ -1,0 +1,178 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2" *ngIf="permission('C')">
+                        <button
+                            pButton
+                            pRipple
+                            label="New"
+                            icon="pi pi-plus"
+                            class="p-button-success mr-2"
+                            (click)="addEditClient(0)"
+                        ></button>
+                    </div>
+                    <div class="my-2">
+                        <button
+                            pButton
+                            pRipple
+                            label="Go Back"
+                            icon="pi pi-arrow-left"
+                            class="p-button-primary mr-2"
+                            (click)="goBack()"
+                        ></button>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="my-2">
+                        <h1 style="margin-top: 10px">Clients</h1>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table
+                #dt
+                [value]="clientList"
+                [columns]="cols"
+                responsiveLayout="scroll"
+                [rows]="10"
+                [globalFilterFields]="[
+                    'full_name',
+                    'address',
+                    'region',
+                    'teams_link'
+                ]"
+                [paginator]="true"
+                [rowsPerPageOptions]="[10, 20, 30]"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [(selection)]="selectedClient"
+                selectionMode="multiple"
+                [rowHover]="true"
+                dataKey="id"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
+                    >
+                        <h5 class="m-0">Manage Client</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input
+                                pInputText
+                                type="text"
+                                (input)="onGlobalFilter(dt, $event)"
+                                placeholder="Search..."
+                                class="w-full sm:w-auto"
+                            />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="full_name">
+                            Full Name
+                            <p-sortIcon field="full_name"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="address">
+                            Address <p-sortIcon field="address"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="region">
+                            Region <p-sortIcon field="region"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="teams_link">
+                            Teams Link<p-sortIcon
+                                field="teams_link"
+                            ></p-sortIcon>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-client>
+                    <tr>
+                        <td style="width: 15%; min-width: 10rem">
+                            <span class="p-column-title">Full Name</span>
+                            {{ client.full_name }}
+                        </td>
+                        <td style="width: 50%; min-width: 10rem">
+                            <span class="p-column-title">Address</span>
+                            {{ client.address }}
+                        </td>
+                        <td style="width: 10%; min-width: 10rem">
+                            <span class="p-column-title">Region</span>
+                            {{ client.region }}
+                        </td>
+                        <td style="width: 10%; min-width: 10rem">
+                            <span class="p-column-title">Teams Link</span>
+                            {{ client.teams_link }}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-eye"
+                                    class="p-button-rounded p-button-primary mr-2"
+                                    (click)="gotoClientDashboard(client.id)"
+                                ></button>
+                                <button
+                                    *ngIf="permission('U')"
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-success mr-2"
+                                    (click)="addEditClient(client.id)"
+                                ></button>
+                                <button
+                                    *ngIf="permission('D')"
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-trash"
+                                    class="p-button-rounded p-button-warning"
+                                    (click)="deleteClient(client)"
+                                ></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog
+            [(visible)]="deleteClientDialog"
+            header="Confirm"
+            [modal]="true"
+            [style]="{ width: '450px' }"
+        >
+            <div class="flex align-items-center justify-content-center">
+                <i
+                    class="pi pi-exclamation-triangle mr-3"
+                    style="font-size: 2rem"
+                ></i>
+                <span *ngIf="client"
+                    >Are you sure you want to delete <b>{{ client.name }}</b
+                    >?</span
+                >
+            </div>
+            <ng-template pTemplate="footer">
+                <button
+                    pButton
+                    pRipple
+                    icon="pi pi-times"
+                    class="p-button-text"
+                    label="No"
+                    (click)="deleteClientDialog = false"
+                ></button>
+                <button
+                    pButton
+                    pRipple
+                    icon="pi pi-check"
+                    class="p-button-text"
+                    label="Yes"
+                    (click)="confirmDelete()"
+                ></button>
+            </ng-template>
+        </p-dialog>
+    </div>
+</div>

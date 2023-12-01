@@ -1,0 +1,95 @@
+<div class="card">
+    <h4>Client Details</h4>
+    <div class="my-2">
+        <button
+            pButton
+            pRipple
+            label="Go Back"
+            icon="pi pi-arrow-left"
+            class="p-button-primary mr-2"
+            (click)="goBack()"
+        ></button>
+    </div>
+    <div class="p-fluid p-formgrid p-grid">
+        <div class="p-field p-col">
+            <label for="full_name">Full Name</label>
+            <input
+                type="text"
+                pInputText
+                id="full_name"
+                [(ngModel)]="client.full_name"
+                required
+                autofocus
+                [ngClass]="{
+                    'ng-invalid ng-dirty': submitted && !client.full_name
+                }"
+            />
+            <small
+                class="ng-dirty ng-invalid"
+                *ngIf="submitted && !client.full_name"
+                >Name is required.</small
+            >
+        </div>
+        <div class="p-field p-col">
+            <label for="address">Address</label>
+            <textarea
+                id="address"
+                pInputTextarea
+                [(ngModel)]="client.address"
+                required
+                rows="3"
+                cols="20"
+            ></textarea>
+        </div>
+        <div class="p-field p-col">
+            <label for="region">Region</label>
+            <input
+                type="text"
+                pInputText
+                id="region"
+                [(ngModel)]="client.region"
+                required
+                autofocus
+                [ngClass]="{
+                    'ng-invalid ng-dirty': submitted && !client.region
+                }"
+            />
+            <small
+                class="ng-dirty ng-invalid"
+                *ngIf="submitted && !client.region"
+                >Region is required.</small
+            >
+        </div>
+        <div class="p-field p-col">
+            <label for="teams_link">Teams link</label>
+            <input
+                type="text"
+                pInputText
+                id="teams_link"
+                [(ngModel)]="client.teams_link"
+                required
+                autofocus
+                [ngClass]="{
+                    'ng-invalid ng-dirty': submitted && !client.teams_link
+                }"
+            />
+            <small
+                class="ng-dirty ng-invalid"
+                *ngIf="submitted && !client.teams_link"
+                >Teams link is required.</small
+            >
+        </div>
+        <br /><br />
+        <div class="p-field p-col">
+            <button
+                *ngIf="permission('C') || permission('U')"
+                pButton
+                pRipple
+                label="Save"
+                icon="pi pi-check"
+                class="p-button-success"
+                (click)="saveClient()"
+            ></button>
+        </div>
+    </div>
+</div>

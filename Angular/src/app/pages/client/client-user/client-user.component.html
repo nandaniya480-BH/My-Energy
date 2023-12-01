@@ -1,0 +1,300 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2" *ngIf="permission('C')">
+                        <button
+                            pButton
+                            pRipple
+                            label="New"
+                            icon="pi pi-plus"
+                            class="p-button-success mr-2"
+                            (click)="openNew()"
+                        ></button>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;
+                    <div class="my-2">
+                        <button
+                            pButton
+                            pRipple
+                            label="Go Back"
+                            icon="pi pi-arrow-left"
+                            class="p-button-primary mr-2"
+                            (click)="goBack()"
+                        ></button>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;
+                    <div class="my-2">
+                        <h1>Users of {{ client.full_name }}</h1>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table
+                #dt
+                [value]="clientUsers"
+                [columns]="cols"
+                responsiveLayout="scroll"
+                [rows]="10"
+                [globalFilterFields]="['full_name', 'password', 'role_name']"
+                [paginator]="true"
+                [rowsPerPageOptions]="[10, 20, 30]"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [(selection)]="selectedClientUsers"
+                selectionMode="multiple"
+                [rowHover]="true"
+                dataKey="id"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
+                    >
+                        <h5 class="m-0">Manage Client Users</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input
+                                pInputText
+                                type="text"
+                                (input)="onGlobalFilter(dt, $event)"
+                                placeholder="Search..."
+                                class="w-full sm:w-auto"
+                            />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="full_name">
+                            Full Name<p-sortIcon field="full_name"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="password">
+                            Password<p-sortIcon field="password"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="role_name">
+                            Permission<p-sortIcon
+                                field="role_name"
+                            ></p-sortIcon>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-cUser>
+                    <tr>
+                        <td style="width: 14%; min-width: 10rem">
+                            <span class="p-column-title">Full Name</span>
+                            {{ cUser.full_name }}
+                        </td>
+                        <td style="width: 14%; min-width: 8rem">
+                            <span class="p-column-title"> Password </span>
+                            <span
+                                pRipple
+                                class="pi pi-eye-slash"
+                                style="font-size: 2rem"
+                            ></span>
+                        </td>
+                        <td style="width: 14%; min-width: 10rem">
+                            <span class="p-column-title">Permission</span>
+                            {{ cUser.role?.name }}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button
+                                *ngIf="permission('U')"
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-success mr-2"
+                                    (click)="editClientUser(cUser)"
+                                ></button>
+                                <button
+                                *ngIf="permission('D')"
+                                    pButton
+                                    pRipple
+                                    icon="pi pi-trash"
+                                    class="p-button-rounded p-button-warning"
+                                    (click)="deleteClientUser(cUser)"
+                                ></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog
+            [(visible)]="clientUserDialog"
+            [style]="{ width: '450px' }"
+            header="Client User Details"
+            [modal]="true"
+            class="p-fluid"
+        >
+            <ng-template pTemplate="content">
+                <div class="field">
+                    <label for="full_name">Full Name</label>
+                    <input
+                        type="text"
+                        pInputText
+                        id="full_name"
+                        [(ngModel)]="clientUser.full_name"
+                        required
+                        autofocus
+                        [ngClass]="{
+                            'ng-invalid ng-dirty':
+                                submitted && !clientUser.full_name
+                        }"
+                    />
+                    <small
+                        class="ng-dirty ng-invalid"
+                        *ngIf="submitted && !clientUser.full_name"
+                        >Full Name is required.</small
+                    >
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        pInputText
+                        id="password"
+                        [toggleMask]="true"
+                        [(ngModel)]="clientUser.password"
+                        required
+                        autofocus
+                        [ngClass]="{
+                            'ng-invalid ng-dirty':
+                                submitted && !clientUser.password
+                        }"
+                    />
+                </div>
+                <div class="field">
+                    <label for="password">Permission</label>
+                    <p-dropdown
+                        appendTo="body"
+                        [options]="roleList"
+                        [(ngModel)]="clientUser.role_id"
+                        optionLabel="name"
+                        optionValue="id"
+                        (onChange)="onChangeOfRole()"
+                        [showClear]="true"
+                        placeholder="Select a Permission"
+                    ></p-dropdown>
+                </div>
+                <div class="field" *ngIf="this.clientUser.role_id > 0">
+                    <table border="1" style="width: 100%;" [cellSpacing]="0">
+                        <tr>
+                            <th>Module</th>
+                            <th>View</th>
+                            <th>Add</th>
+                            <th>Update</th>
+                            <th>Delete</th>
+                        </tr>
+                        <tr *ngFor="let permission of selectedRole.permissions">
+                            <td>{{ permission.module }}</td>
+                            <td style="text-align: center;">
+                                <span
+                                    pRipple
+                                    [ngClass]="
+                                        permission.View
+                                            ? 'pi pi-check'
+                                            : 'pi pi-times'
+                                    "
+                                    style="font-size: 2rem"
+                                ></span>
+                            </td>
+                            <td style="text-align: center;">
+                                <span
+                                    pRipple
+                                    [ngClass]="
+                                        permission.Add
+                                            ? 'pi pi-check'
+                                            : 'pi pi-times'
+                                    "
+                                    style="font-size: 2rem"
+                                ></span>
+                            </td>
+                            <td style="text-align: center;">
+                                <span
+                                    pRipple
+                                    [ngClass]="
+                                        permission.Update
+                                            ? 'pi pi-check'
+                                            : 'pi pi-times'
+                                    "
+                                    style="font-size: 2rem"
+                                ></span>
+                            </td>
+                            <td style="text-align: center;">
+                                <span
+                                    pRipple
+                                    [ngClass]="
+                                        permission.Delete
+                                            ? 'pi pi-check'
+                                            : 'pi pi-times'
+                                    "
+                                    style="font-size: 2rem"
+                                ></span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button
+                    pButton
+                    pRipple
+                    label="Cancel"
+                    icon="pi pi-times"
+                    class="p-button-text"
+                    (click)="hideDialog()"
+                ></button>
+                <button
+                    pButton
+                    pRipple
+                    label="Save"
+                    icon="pi pi-check"
+                    class="p-button-text"
+                    (click)="saveClientUser()"
+                ></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog
+            [(visible)]="deleteClientUserDialog"
+            header="Confirm"
+            [modal]="true"
+            [style]="{ width: '450px' }"
+        >
+            <div class="flex align-items-center justify-content-center">
+                <i
+                    class="pi pi-exclamation-triangle mr-3"
+                    style="font-size: 2rem"
+                ></i>
+                <span *ngIf="clientUser"
+                    >Are you sure you want to delete
+                    <b>{{ clientUser.full_name }}</b
+                    >?</span
+                >
+            </div>
+            <ng-template pTemplate="footer">
+                <button
+                    pButton
+                    pRipple
+                    icon="pi pi-times"
+                    class="p-button-text"
+                    label="No"
+                    (click)="deleteClientUserDialog = false"
+                ></button>
+                <button
+                    pButton
+                    pRipple
+                    icon="pi pi-check"
+                    class="p-button-text"
+                    label="Yes"
+                    (click)="confirmDelete()"
+                ></button>
+            </ng-template>
+        </p-dialog>
+    </div>
+</div>

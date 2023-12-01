@@ -1,0 +1,114 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button
+                            pButton
+                            pRipple
+                            label="Go Back"
+                            icon="pi pi-arrow-left"
+                            class="p-button-primary mr-2"
+                            (click)="goBack()"
+                        ></button>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="my-2">
+                        <h1 style="margin-top: 10px">
+                            {{ client.full_name }} Plans
+                        </h1>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table
+                #dt
+                [value]="clientPlanList"
+                [columns]="cols"
+                responsiveLayout="scroll"
+                [rows]="10"
+                [globalFilterFields]="[
+                    'short_name',
+                    'description',
+                    'status',
+                    'purchase_source',
+                    'source_capacity'
+                ]"
+                [paginator]="true"
+                [rowsPerPageOptions]="[10, 20, 30]"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                selectionMode="multiple"
+                [rowHover]="true"
+                dataKey="id"
+            >
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
+                    >
+                        <h5 class="m-0">Manage Plans</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input
+                                pInputText
+                                type="text"
+                                (input)="onGlobalFilter(dt, $event)"
+                                placeholder="Search..."
+                                class="w-full sm:w-auto"
+                            />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="short_name">
+                            short_name
+                            <p-sortIcon field="short_name"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="description">
+                            description
+                            <p-sortIcon field="description"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="status">
+                            status <p-sortIcon field="status"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="purchase_source">
+                            purchase_source
+                            <p-sortIcon field="purchase_source"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="source_capacity">
+                            source_capacity
+                            <p-sortIcon field="source_capacity"></p-sortIcon>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-clientP>
+                    <tr>
+                        <td style="width: 15%; min-width: 10rem">
+                            <span class="p-column-title">short_name</span>
+                            {{ clientP.short_name }}
+                        </td>
+                        <td style="width: 50%; min-width: 10rem">
+                            <span class="p-column-title">description</span>
+                            {{ clientP.description }}
+                        </td>
+                        <td style="width: 10%; min-width: 10rem">
+                            <span class="p-column-title">status</span>
+                            {{ clientP.status }}
+                        </td>
+                        <td style="width: 10%; min-width: 10rem">
+                            <span class="p-column-title">purchase_source</span>
+                            {{ clientP.purchase_source }}
+                        </td>
+                        <td style="width: 10%; min-width: 10rem">
+                            <span class="p-column-title">source_capacity</span>
+                            {{ clientP.source_capacity }}
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
