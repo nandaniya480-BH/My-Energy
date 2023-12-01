@@ -52,7 +52,7 @@ class ClientController extends Controller
                 'full_name' => ['required'],
                 'address' => ['nullable'],
                 'region' => ['nullable'],
-                'teams_link' => ['nullable', 'url'],
+                'teams_link' => ['nullable'],
             ]);
 
             if ($validator->fails()) {
@@ -98,7 +98,7 @@ class ClientController extends Controller
                 'full_name' => ['required'],
                 'address' => ['nullable'],
                 'region' => ['nullable'],
-                'teams_link' => ['nullable', 'url'],
+                'teams_link' => ['nullable'],
             ]);
 
             if ($validator->fails()) {
