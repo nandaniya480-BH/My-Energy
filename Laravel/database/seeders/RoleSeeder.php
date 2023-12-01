@@ -33,6 +33,10 @@ class RoleSeeder extends Seeder
                 'name' => 'Manager',
                 'permissions' => [
                     [
+                        'module' => 'Client',
+                        'permission' => []
+                    ],
+                    [
                         'module' => 'Client User',
                         'permission' => ['C', 'R', 'U', 'D']
                     ],
@@ -45,6 +49,14 @@ class RoleSeeder extends Seeder
             [
                 'name' => 'Employee',
                 'permissions' => [
+                    [
+                        'module' => 'Client',
+                        'permission' => []
+                    ],
+                    [
+                        'module' => 'Client User',
+                        'permission' => []
+                    ],
                     [
                         'module' => 'Consumption Plan',
                         'permission' => ['C', 'R', 'U', 'D']
