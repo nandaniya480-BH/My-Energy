@@ -13,4 +13,9 @@ class ClientUser extends Model
     protected $hidden = [
         'password',
     ];
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
 }

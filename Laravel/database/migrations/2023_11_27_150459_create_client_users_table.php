@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('client_id');
             $table->string('full_name');
             $table->string('password');
+            $table->unsignedBigInteger('role_id');
             $table->datetime('last_login')->nullable();
             $table->unsignedBigInteger('master_client_user')->nullable();        
             $table->timestamps();

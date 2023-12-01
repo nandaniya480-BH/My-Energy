@@ -27,12 +27,15 @@ class DataController extends Controller
         }
     }
 
-    public function role()
+    public function role($id = null)
     {
         try {
             return $this->success(
                 'Role',
                 Role::query()
+                    ->when($id && $id != "", function ($query) use ($id) {
+                        return $query->where('id', $id);
+                    })
                     ->with('permissions')
                     ->get()
             );

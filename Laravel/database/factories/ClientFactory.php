@@ -6,6 +6,8 @@ use App\Models\Client;
 use App\Models\ClientPlan;
 use App\Models\ClientUser;
 use App\Models\ConsumptionPlan;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -31,13 +33,26 @@ class ClientFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (Client $client) {
+
+            User::factory()->create([
+                'user_name' => $client->full_name,
+                'role_id' =>  Role::where('name', 'admin')->first()->id
+            ]);
+
             ClientUser::factory()
                 ->count(random_int(5, 10))
-                ->create(['client_id' => $client->id]);
+                ->create([
+                    'client_id' => $client->id,
+                    'role_id' =>  Role::where('name', 'client')->first()->id
+                ]);
 
             ClientPlan::factory()
                 ->count(random_int(5, 10))
-                ->create(['client_id' => $client->id]);
+                ->create(
+                    [
+                        'client_id' => $client->id,
+                    ]
+                );
 
             // ConsumptionPlan::factory()
             //     ->count(random_int(10, 15))

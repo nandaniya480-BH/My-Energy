@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\ApiResponseTrait;
 use App\Models\ClientUser;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,7 @@ class ClientUserController extends Controller
         try {
             $data = ClientUser::query()
                 ->whereClientId($client_id)
+                ->with('role.permissions')
                 ->when($request->has('full_name') && $request->full_name[0] != "", function ($query) use ($request) {
                     $query->where('full_name', "LIKE", "%" . $request->full_name[0] . "%");
                 })
@@ -51,6 +53,7 @@ class ClientUserController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'full_name' => ['required'],
+                'role_id' => ['required'],
                 'client_id' => ['required', 'exists:clients,id'],
                 'password' => ['required']
             ]);
@@ -67,8 +70,15 @@ class ClientUserController extends Controller
                 'full_name',
                 'client_id',
                 'password',
+                'role_id'
             ]);
             $input['password'] = Hash::make($request->password);
+
+            User::create([
+                'user_name' => $input['full_name'],
+                'role_id' => $input['role_id'],
+                'password' => $input['password']
+            ]);
 
             DB::beginTransaction();
             $data = ClientUser::create($input);
@@ -83,7 +93,7 @@ class ClientUserController extends Controller
     public function show($id)
     {
         try {
-            $client = ClientUser::find($id);
+            $client = ClientUser::with('role.permissions')->find($id);
             if ($client) {
                 return $this->success('Client User info', $client);
             } else {
@@ -99,6 +109,7 @@ class ClientUserController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'full_name' => ['required'],
+                'role_id' => ['required'],
                 'client_id' => ['required', 'exists:clients,id'],
                 'password' => ['required']
             ]);
@@ -115,6 +126,7 @@ class ClientUserController extends Controller
                 'full_name',
                 'client_id',
                 'password',
+                'role_id'
             ]);
             $input['password'] = Hash::make($request->password);
 
@@ -122,6 +134,12 @@ class ClientUserController extends Controller
             DB::beginTransaction();
             if ($client) {
                 $client->update($input);
+                User::where('user_name', $client->full_name)
+                    ->update([
+                        'user_name' => $input['full_name'],
+                        'role_id' => $input['role_id'],
+                        'password' => $input['password']
+                    ]);
                 DB::commit();
                 return $this->success('Client User updated successfully.');
             } else {

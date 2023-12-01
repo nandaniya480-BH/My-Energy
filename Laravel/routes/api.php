@@ -26,7 +26,7 @@ Route::group(['middleware' => 'cors'], function () {
         Route::get('get-client', [DataController::class, 'client']);
         Route::get('get-client-plan', [DataController::class, 'clientPlan']);
         Route::get('get-client-user', [DataController::class, 'clientUser']);
-        Route::get('get-roles', [DataController::class, 'role']);
+        Route::get('get-roles/{id?}', [DataController::class, 'role']);
 
         Route::apiResources([
             'client' => ClientController::class,

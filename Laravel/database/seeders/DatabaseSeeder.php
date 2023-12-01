@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
         User::truncate();
         User::factory()->create([
             'user_name' => 'Test User',
-            'email' => 'test@example.com','role_id' => Role::where('name', 'admin')->first()->id 
+            'email' => 'test@example.com',
+            'role_id' => Role::where('name', 'admin')->first()->id 
         ]);
 
         $this->call([

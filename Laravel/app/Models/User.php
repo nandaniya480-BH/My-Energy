@@ -18,9 +18,11 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $fillable = [
+        'user_name',
         'name',
         'email',
         'password',
+        'role_id'
     ];
 
     /**
@@ -45,5 +47,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'user_name', 'full_name');
+    }
+
+    public function client1()
+    {
+        return $this->belongsTo(ClientUser::class, 'user_name', 'full_name');
     }
 }

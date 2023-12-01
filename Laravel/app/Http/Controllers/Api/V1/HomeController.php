@@ -58,7 +58,6 @@ class HomeController extends Controller
         }
     }
 
-
     public function SignIn(LoginApiRequest $request)
     {
         try {
@@ -74,7 +73,11 @@ class HomeController extends Controller
                 $this->userRepository->updateUser($user->id, ["access_token" => $user['access_token']]);
                 $data  = [
                     'access_token' => $user->access_token,
-                    'permission' => $user->role->permissions
+                    'permission' => $user->role->permissions,
+                    'client' => $user->client != null ? $user->client : $user->client1,
+                    // 'client1' => $user->client1,
+
+                    // 'role' => $user->role,
                 ];
                 return $this->success(trans('message.loginSuccessfully'), $data, Response::HTTP_OK);
             } else {
@@ -88,8 +91,6 @@ class HomeController extends Controller
             return $this->error($e->getMessage(), $e->getCode());
         }
     }
-
-
 
     public function changePassword(changePasswordRequest $request)
     {
