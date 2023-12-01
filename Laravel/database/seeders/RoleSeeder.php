@@ -16,6 +16,7 @@ class RoleSeeder extends Seeder
             'client'
         ];
         $modules = [
+            'client',
             'client_user',
             'consumption_plan'
         ];
