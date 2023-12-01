@@ -12,21 +12,42 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         $roles = [
-            'admin',
-            'client'
+            [
+                'name' => 'admin',
+                'permissions' => [
+                    [
+                        'module' => 'client',
+                        'permission' => ['C', 'R', 'U', 'D']
+                    ]
+                ]
+            ],
+            [
+                'name' => 'client',
+                'permissions' => [
+                    [
+                        'module' => 'client_user',
+                        'permission' => ['C', 'R', 'U', 'D']
+                    ]
+                ]
+            ],
+            [
+                'name' => 'consumption_plan',
+                'permissions' => [
+                    [
+                        'module' => 'consumption_plan',
+                        'permission' => ['C', 'R', 'U', 'D']
+                    ]
+                ]
+            ]
         ];
-        $modules = [
-            'client',
-            'client_user',
-            'consumption_plan'
-        ];
+
         foreach ($roles as $role) {
-            $NewRole = Role::create(['name' => $role]);
-            foreach ($modules as $modal) {
+            $NewRole = Role::create(['name' => $role['name']]);
+            foreach ($role['permissions'] as $permission) {
                 Permission::create([
                     'role_id' => $NewRole->id,
-                    'module' => $modal,
-                    'access' => json_encode(['C', 'R', 'U', 'D'])
+                    'module' => $permission['module'],
+                    'access' => json_encode($permission['permission'])
                 ]);
             }
         }
